@@ -13,13 +13,13 @@ function main() {
 
                 finish(0)
             })
-    } catch (err) {
-        console.log(process.env.CREATION_ERROR, err)
+    } catch {
         finish(1)
     }
 }
 
 function finish(code) {
+    console.log(!code ? process.env.SUCCESS_MSG : process.env.CREATION_ERROR)
     process.exit(code)
 }
 
