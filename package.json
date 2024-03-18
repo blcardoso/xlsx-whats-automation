@@ -2,12 +2,16 @@
   "name": "xlsx-whatsapp-automation",
   "version": "0.0.0",
   "private": true,
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "electron ."
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "read-excel-file": "^5.7.1",
     "venom-bot": "^5.0.21"
+  },
+  "devDependencies": {
+    "electron": "^29.1.4"
   }
 }
