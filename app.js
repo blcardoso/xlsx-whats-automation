@@ -3,24 +3,37 @@ const {
     createWhatsAppClient,
     sendMessages
 } = require("./services/whatsapp")
+const {app, BrowserWindow} = require("electron")
 
 function main() {
     try {
-        readFile()
-            .then(async (messages) => {
-                const client = await createWhatsAppClient()
-                await sendMessages(client, messages)
+        app.whenReady().then(async () => {
+            await createAppWindow()
+        })
 
-                finish(0)
-            })
+
+        // readFile()
+        //     .then(async (messages) => {
+        //         const client = await createWhatsAppClient()
+        //         await sendMessages(client, messages)
+        //     })
+
+        app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') app.quit()
+        })
     } catch {
-        finish(1)
+        process.exit(1)
     }
 }
 
-function finish(code) {
-    console.log(!code ? process.env.SUCCESS_MSG : process.env.CREATION_ERROR)
-    process.exit(code)
+function createAppWindow() {
+    const win = new BrowserWindow({
+        width: 400,
+        height: 300,
+        autoHideMenuBar: true
+    })
+
+    return win.loadFile('./pages/index.html')
 }
 
 main()
