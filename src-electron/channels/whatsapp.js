@@ -2,27 +2,32 @@ const { randomTimer } = require('../utils')
 const { ipcMain, dialog } = require("electron");
 const { create } = require('venom-bot')
 
-let whatsapp = null
+let whatsapp
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
-  whatsapp = await create({
-    disableSpins: true,
-    disableWelcome: true,
-    headless: 'new',
-    session: process.env.USERNAME,
-    catchQR: (qrCode) => {
-      event.reply('QR_CODE', qrCode)
-    },
-    statusFind: (statusSession, session) => {
-      event.reply('STATUS_SESSION', { statusSession, session })
-    },
-    folderNameToken: "tokens",
-    mkdirFolderToken: "./whatsapp-config",
-    createPathFileToken: true,
-    forceConnect: true,
-    waitForLogin: true,
-    updatesLog: true
-  })
+  try {
+    whatsapp = await create({
+      disableSpins: true,
+      disableWelcome: true,
+      headless: 'new',
+      session: process.env.USERNAME,
+      catchQR: (qrCode) => {
+        event.reply('QR_CODE', qrCode)
+      },
+      statusFind: (statusSession, session) => {
+        event.reply('STATUS_SESSION', { statusSession, session })
+      },
+      folderNameToken: "tokens",
+      mkdirFolderToken: "./whatsapp-config",
+      createPathFileToken: true,
+      forceConnect: true,
+      waitForLogin: true,
+      updatesLog: true
+    })
+    console.log('create', whatsapp)
+  } catch (error) {
+    console.log("ERRO", error)
+  }
 })
 
 ipcMain.on('SEND_MESSAGES', async (event, payload) => {
@@ -30,7 +35,7 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
   //   event.reply('CLIENT_NOT_INITIALIZED')
   //   return
   // }
-  
+  console.log('whatsapp', whatsapp)
   for (const msg of payload) {
     try {
         const timer = randomTimer()
