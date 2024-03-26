@@ -4,7 +4,6 @@ const validChannels = [
   "QR_CODE"
 ]
 contextBridge.exposeInMainWorld('whatsapp', {
-  createClient: () => ipcRenderer.invoke("whatsapp:create-client"),
   send: (channel, data) => {
     if (validChannels.includes(channel)) {
       console.log('teste send', channel, data)

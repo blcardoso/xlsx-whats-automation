@@ -1,23 +1,10 @@
 import { ipcMain } from "electron";
-import { create, Whatsapp } from "venom-bot"
+import { create } from "venom-bot"
 
-ipcMain.handle("whatsapp:create-client", async (_) => {
-  console.log('teste')
-  const client = await create({
-    session: process.env.USERNAME,
-    catchQR: (qrCode, asciiQR) => {
-
-    },
-    logQR: false,
-    folderNameToken: "tokens",
-    mkdirFolderToken: "./whatsapp-config"
-  })
-})
-
+var whatsapp = null
 
 ipcMain.on('CREATE_CLIENT', async (event, payload) => {
-  console.log("teste CREATE_CLIENT", payload)
-  const client = await create({
+  await create({
     session: process.env.USERNAME,
     catchQR: (qrCode, asciiQR) => {
       event.reply('QR_CODE', qrCode)
@@ -25,8 +12,8 @@ ipcMain.on('CREATE_CLIENT', async (event, payload) => {
     logQR: false,
     folderNameToken: "tokens",
     mkdirFolderToken: "./whatsapp-config"
+  }).then(client => {
+    whatsapp = client
+    event.reply('CONNECTION_SUCCESSFUL')
   })
-
-  console.log(client)
-
 })
