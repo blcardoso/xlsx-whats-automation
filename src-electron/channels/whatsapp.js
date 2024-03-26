@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { create, Whatsapp } from "venom-bot"
 
 ipcMain.handle("whatsapp:create-client", async (_) => {
+  console.log('teste')
   const client = await create({
     session: process.env.USERNAME,
     catchQR: (qrCode, asciiQR) => {
@@ -15,7 +16,7 @@ ipcMain.handle("whatsapp:create-client", async (_) => {
 
 
 ipcMain.on('CREATE_CLIENT', async (event, payload) => {
-  console.log("teste", payload  )
+  console.log("teste CREATE_CLIENT", payload)
   const client = await create({
     session: process.env.USERNAME,
     catchQR: (qrCode, asciiQR) => {

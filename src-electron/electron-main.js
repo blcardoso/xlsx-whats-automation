@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import os from 'os'
+import './channels/whatsapp'
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform()

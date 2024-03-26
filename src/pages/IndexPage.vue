@@ -22,8 +22,9 @@ defineOptions({
 
 onMounted(async () => {
   console.log('window.whatsapp', window.whatsapp)
-  window.whatsapp.send('CREATE_CLIENT', 'teste')
-  window.whatsapp.on('QR_CODE', (qrCode) => {
+  await window.whatsapp.send('CREATE_CLIENT', 'teste')
+  await window.whatsapp.createClient()
+  await window.whatsapp.on('QR_CODE', (qrCode) => {
     console.log({qrCode})
       base64.value = qrCode
   })
