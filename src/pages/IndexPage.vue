@@ -22,19 +22,41 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 const base64 = ref("")
 const isVisible = ref(true)
+const statusText = ref("")
+const sessionText = ref("")
+const router = useRouter()
+const isConnected = ['isLogged', 'qrReadSuccess', 'chatsAvailable']
 
 defineOptions({
   name: 'IndexPage'
 });
 
-onMounted(async () => {
-  await window.whatsapp.send('CREATE_CLIENT')
-  await window.whatsapp.on('QR_CODE', (qrCode) => {
+onMounted(() => {
+  window.whatsapp.send('CREATE_CLIENT')
+
+  window.whatsapp.on('QR_CODE', (qrCode) => {
     base64.value = qrCode
     isVisible.value = false
   })
+
+  window.whatsapp.on('STATUS_SESSION', ({ session, statusSession }) => {
+    statusText.value = statusSession
+    sessionText.value = session
+  
+    if (isConnected.includes(statusSession)) {
+      router.push({
+        name: 'user-session',
+        query: {
+          user: sessionText.value
+        }
+      })
+    }
+  })
 })
+
 </script>

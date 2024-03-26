@@ -16,6 +16,7 @@
     "@quasar/extras": "^1.16.4",
     "core-js": "^3.31.1",
     "quasar": "^2.8.0",
+    "read-excel-file": "^5.7.1",
     "venom-bot": "^5.0.21",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
