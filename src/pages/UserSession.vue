@@ -2,7 +2,7 @@
   <q-page class="flex flex-start column bg-green-3 text-center">
     <q-page-container class="flex flex-center column">
         <h6>Nome da sessão: {{ sessionName }}</h6>
-         <q-btn color="primary" icon="check" label="Escolher Excel" @click="click" />
+         <q-btn color="green" icon="download" label="Escolher Excel" @click="click" />
         <span class="q-pt-lg q-pb-sm">
             <b>
                 Arquivo selecionado:
@@ -16,7 +16,7 @@
        </q-virtual-scroll> -->
 
        <q-footer class="bg-green-3 q-py-sm">
-        <q-btn color="primary" @click="readFile()">
+        <q-btn color="green" @click="readFile()" :loading="isLoading">
             Importar
         </q-btn>
        </q-footer>
@@ -34,6 +34,7 @@
     const sessionName = ref("")
     const $q = useQuasar()
     const logs = ref([])
+    const isLoading = ref(false)
 
     defineOptions({
         name: 'UserSession'
@@ -72,12 +73,31 @@
             position: 'top-right'
             })
         } else {
+            isLoading.value = true
             window.xlsx.send('READ_FILE', filePath.value)
         }
     }
 
-
 window.xlsx.on('MESSAGES', payload => {
     window.whatsapp.send('SEND_MESSAGES', payload)
 })
+
+window.whatsapp.on('END-AUTOMATION', () => {
+    isLoading.value = false
+    $q.notify({
+        type: 'positive',
+        message: 'Processo finalizado',
+        position: 'top-right'
+    })
+})
+
+// window.whatsapp.on('CLIENT_NOT_INITIALIZED', () => {
+//      $q.notify({
+//         type: 'negative',
+//         message: 'Whatsapp não disponível',
+//         position: 'top-right'
+//     })
+
+//     isLoading.value = false
+// })
 </script>

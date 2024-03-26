@@ -1,15 +1,14 @@
-import { ipcMain, dialog } from "electron";
-import { create } from "venom-bot"
-import randomTimer from '../utils'
+const { randomTimer } = require('../utils')
+const { ipcMain, dialog } = require("electron");
+const { create } = require('venom-bot')
 
-global.client = null
+let whatsapp = null
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
-  global.client = await create({
+  whatsapp = await create({
     disableSpins: true,
     disableWelcome: true,
-    debug: true,
-    headless: true,
+    headless: 'new',
     session: process.env.USERNAME,
     catchQR: (qrCode) => {
       event.reply('QR_CODE', qrCode)
@@ -20,10 +19,18 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
     folderNameToken: "tokens",
     mkdirFolderToken: "./whatsapp-config",
     createPathFileToken: true,
+    forceConnect: true,
+    waitForLogin: true,
+    updatesLog: true
   })
 })
 
 ipcMain.on('SEND_MESSAGES', async (event, payload) => {
+  // if (!whatsapp) {
+  //   event.reply('CLIENT_NOT_INITIALIZED')
+  //   return
+  // }
+  
   for (const msg of payload) {
     try {
         const timer = randomTimer()
@@ -33,11 +40,11 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
           console.log(msg)
             setTimeout((_) => {
                 if (!msg.image) {
-                    global.client.sendText(msg.number, msg.message)
+                  whatsapp.sendText(msg.number, msg.message)
                         .then(resolve)
                         .catch(reject)
                 } else {
-                  global.client.sendImage(
+                  whatsapp.sendImage(
                         msg.number,
                         msg.image,
                         "image",
@@ -51,6 +58,9 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
         console.log("Mensagem enviada para o número: " + msg.number)
     } catch (e) {
         console.log("Error ao enviar mensagem para o número: " + msg.number)
+        console.log(e)
+    } finally {
+      event.reply('END_AUTOMATION')
     }
   }
 })

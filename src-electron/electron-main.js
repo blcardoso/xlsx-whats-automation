@@ -2,7 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import os from 'os'
 
-import './channels/whatsapp'
+import './channels/whatsapp';
 import './channels/xlsx'
 
 // needed in case process is undefined under Linux
@@ -16,8 +16,9 @@ function createWindow () {
    */
   mainWindow = new BrowserWindow({
     icon: path.resolve(__dirname, 'icons/icon.png'), // tray icon
-    width: 1000,
-    height: 600,
+    width: 450,
+    height: 475,
+    autoHideMenuBar: true,
     useContentSize: true,
     webPreferences: {
       contextIsolation: true,

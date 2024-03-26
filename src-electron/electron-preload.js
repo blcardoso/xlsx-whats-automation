@@ -6,7 +6,9 @@ const validChannels = [
   "CONNECTION_SUCCESSFUL",
   "MESSAGES",
   "READ_FILE",
-  "SEND_MESSAGES"
+  "SEND_MESSAGES",
+  "END_AUTOMATION",
+  // "CLIENT_NOT_INITIALIZED"
 ]
 
 contextBridge.exposeInMainWorld('whatsapp', {
