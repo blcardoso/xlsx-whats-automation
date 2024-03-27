@@ -1,7 +1,7 @@
 const { randomTimer } = require('../utils')
 const { ipcMain, dialog } = require("electron");
 const { create } = require('venom-bot')
-
+import fs from 'fs'
 let whatsapp
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
@@ -36,6 +36,7 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
   //   return
   // }
   console.log('whatsapp', whatsapp)
+  console.log('payload', payload)
   for (const msg of payload) {
     try {
         const timer = randomTimer()
@@ -44,7 +45,7 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
         await new Promise((resolve, reject) => {
           console.log(msg)
             setTimeout((_) => {
-                if (!msg.image) {
+              if (!msg.image && fs.existsSync(msg.image)) {
                   whatsapp.sendText(msg.number, msg.message)
                         .then(resolve)
                         .catch(reject)
