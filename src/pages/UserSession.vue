@@ -1,27 +1,26 @@
 <template>
-  <q-page class="flex flex-start column bg-green-3 text-center">
-    <q-page-container class="flex flex-center column">
-        <h6>Nome da sessão: {{ sessionName }}</h6>
-         <q-btn color="green" icon="download" label="Escolher Excel" @click="click" />
-        <span class="q-pt-lg q-pb-sm">
-            <b>
-                Arquivo selecionado:
-            </b>
-        </span>
-        <span>
-            {{ filePath }}
-        </span>
-       
-       <!-- <q-virtual-scroll :items="logs">
+    <q-page class="flex flex-start column bg-green-3 text-center">
+        <q-page-container class="flex flex-center column">
+            <h6>Nome da sessão: {{ sessionName }}</h6>
+            <q-btn color="green" icon="download" label="Escolher Excel" @click="click" />
+            <span class="q-pt-lg q-pb-sm">
+                <b>
+                    Arquivo selecionado:
+                </b>
+            </span>
+            <span>
+                {{ filePath }}
+            </span>
+
+            <!-- <q-virtual-scroll :items="logs">
        </q-virtual-scroll> -->
 
-       <q-footer class="bg-green-3 q-py-sm">
-        <q-btn color="green" @click="readFile()" :loading="isLoading">
-            Importar
-        </q-btn>
-       </q-footer>
-    </q-page-container>
-  </q-page>
+            <q-footer class="bg-green-3 q-py-sm">
+                <q-btn color="green" @click="readFile()" label="Enviar mensagens" :loading="isLoading">
+                </q-btn>
+            </q-footer>
+        </q-page-container>
+    </q-page>
 </template>
 
 <script setup>
@@ -82,7 +81,7 @@ window.xlsx.on('MESSAGES', payload => {
     window.whatsapp.send('SEND_MESSAGES', payload)
 })
 
-window.whatsapp.on('END-AUTOMATION', () => {
+window.whatsapp.on('END_AUTOMATION', () => {
     isLoading.value = false
     $q.notify({
         type: 'positive',
