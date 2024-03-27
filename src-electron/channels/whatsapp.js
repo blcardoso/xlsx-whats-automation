@@ -1,6 +1,7 @@
 const { randomTimer } = require('../utils')
 const { ipcMain, dialog } = require("electron");
 const { create } = require('venom-bot')
+const moment = require('moment-timezone')
 import fs from 'fs'
 let whatsapp
 
@@ -20,8 +21,6 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
       folderNameToken: "tokens",
       mkdirFolderToken: "./whatsapp-config",
       createPathFileToken: true,
-      forceConnect: true,
-      waitForLogin: true,
       updatesLog: true
     })
     console.log('create', whatsapp)
@@ -31,44 +30,54 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
 })
 
 ipcMain.on('SEND_MESSAGES', async (event, payload) => {
-  // if (!whatsapp) {
-  //   event.reply('CLIENT_NOT_INITIALIZED')
-  //   return
-  // }
-  console.log('whatsapp', whatsapp)
-  console.log('payload', payload)
+  var messagesSent = []
+
   for (const msg of payload) {
-    try {
         const timer = randomTimer()
         console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
 
-        await new Promise((resolve, reject) => {
-          console.log(msg)
-            setTimeout((_) => {
-              if (!msg.image && fs.existsSync(msg.image)) {
-                  whatsapp.sendText(msg.number, msg.message)
-                        .then(resolve)
-                        .catch(reject)
-                } else {
-                  whatsapp.sendImage(
-                        msg.number,
-                        msg.image,
-                        "image",
-                        msg.message
-                    )
-                        .then(resolve)
-                        .catch(reject)
-                }
-            }, timer)
-        })
-        console.log("Mensagem enviada para o número: " + msg.number)
-    } catch (e) {
-        console.log("Error ao enviar mensagem para o número: " + msg.number)
-        console.log(e)
-    } finally {
-      event.reply('END_AUTOMATION')
+    try {
+    await new Promise((resolve, reject) => {
+      setTimeout((_) => {
+        whatsapp.checkNumberStatus(msg.number)
+          .then(() => {
+            if (!msg.image && fs.existsSync(msg.image)) {
+              whatsapp.sendText(msg.number, msg.message)
+                .then(() => resolve())
+                .catch((err) => reject(err.message))
+            } else {
+              whatsapp.sendImage(
+                msg.number,
+                msg.image,
+                "image",
+                msg.message
+              )
+                .then(() => resolve())
+                .catch((err) => reject(err.message))
+            }
+          })
+          .catch(_ => reject('Número inválido'))
+      }, timer)
+    })
+
+      console.log("Mensagem enviada para o número: " + msg.number.replace('@c.us', ''))
+
+      messagesSent.push({
+        phone: msg.number.replace('@c.us', ''),
+        status: 'Sucesso',
+        last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
+      })
+    } catch (err) {
+      console.log("Erro ao enviar mensagem para o número: " + msg.number.replace('@c.us', ''))
+
+      messagesSent.push({
+        phone: msg.number.replace('@c.us', ''),
+        status: err,
+        last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
+      })
     }
   }
+     event.reply('WRITE_XLSX', messagesSent)
 })
 
 ipcMain.handle('showOpenDialog', async (_, options) => {

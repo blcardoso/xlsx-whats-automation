@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/xlsxautomation.iml" filepath="$PROJECT_DIR$/.idea/xlsxautomation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/xlsx-whats-automation.iml" filepath="$PROJECT_DIR$/.idea/xlsx-whats-automation.iml" />
     </modules>
   </component>
 </project>

@@ -77,7 +77,7 @@
         }
     }
 
-window.xlsx.on('MESSAGES', payload => {
+window.xlsx.on('SEND_MESSAGES', payload => {
     window.whatsapp.send('SEND_MESSAGES', payload)
 })
 
@@ -90,13 +90,7 @@ window.whatsapp.on('END_AUTOMATION', () => {
     })
 })
 
-// window.whatsapp.on('CLIENT_NOT_INITIALIZED', () => {
-//      $q.notify({
-//         type: 'negative',
-//         message: 'Whatsapp não disponível',
-//         position: 'top-right'
-//     })
-
-//     isLoading.value = false
-// })
+window.whatsapp.on('WRITE_XLSX', payload => {
+    window.xlsx.send('WRITE_XLSX', payload)
+})
 </script>

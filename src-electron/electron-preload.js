@@ -4,11 +4,10 @@ const validChannels = [
   "QR_CODE",
   "STATUS_SESSION",
   "CONNECTION_SUCCESSFUL",
-  "MESSAGES",
   "READ_FILE",
   "SEND_MESSAGES",
   "END_AUTOMATION",
-  // "CLIENT_NOT_INITIALIZED"
+  "WRITE_XLSX"
 ]
 
 contextBridge.exposeInMainWorld('whatsapp', {
