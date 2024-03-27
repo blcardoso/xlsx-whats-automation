@@ -1,17 +1,50 @@
 {
-  "name": "xlsx-whatsapp-automation",
-  "version": "0.0.0",
+  "name": "xlsxautomation",
+  "version": "0.0.1",
+  "description": "Automation for xlsx and whatsapp",
+  "productName": "Xlsx Automation",
+  "author": "Bruno <bruno.cardosox@gmail.com>",
   "private": true,
-  "main": "app.js",
   "scripts": {
-    "start": "electron ."
+    "lint": "eslint --ext .js,.vue ./",
+    "format": "prettier --write \"**/*.{js,vue,css,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0",
+    "dev": "quasar dev -m electron",
+    "build": "quasar build"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
+    "@quasar/extras": "^1.16.4",
+    "core-js": "^3.31.1",
+    "quasar": "^2.8.0",
     "read-excel-file": "^5.7.1",
-    "venom-bot": "^5.0.21"
+    "venom-bot": "^5.0.21",
+    "vue": "^3.4.18",
+    "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "electron": "^29.1.4"
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app-webpack": "^3.9.2",
+    "electron": "^29.1.5",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "eslint-webpack-plugin": "^3.1.1",
+    "prettier": "^2.5.1"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": "^20 || ^18 || ^16",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
   }
 }

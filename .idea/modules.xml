@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../xlsx-whatsapp-automation.iml" filepath="$PROJECT_DIR$/../xlsx-whatsapp-automation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/xlsxautomation.iml" filepath="$PROJECT_DIR$/.idea/xlsxautomation.iml" />
     </modules>
   </component>
 </project>
