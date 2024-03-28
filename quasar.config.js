@@ -204,8 +204,12 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-electron-apps/configuring-electron
     electron: {
-      bundler: 'packager', // 'packager' or 'builder'
-
+      bundler: 'builder', // 'packager' or 'builder'
+      win: {
+        deleteAppDataOnUninstall: true,
+        guid: '3fadc201-cd6c-4c97-8482-baa7edc5a31c',
+        target: 'nsis'
+      },
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
 

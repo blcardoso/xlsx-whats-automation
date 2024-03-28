@@ -6,7 +6,7 @@
   "author": "Bruno Cardoso <bruno.cardosox@gmail.com>",
   "contributors": [
     {
-      "name":"Nicolas Felippe",
+      "name": "Nicolas Felippe",
       "url": "https://github.com/NicolasFelippe",
       "email": "nickfelippe18@gmail.com"
     }
@@ -17,7 +17,7 @@
     "format": "prettier --write \"**/*.{js,vue,css,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "node fix-venom.js && quasar dev -m electron",
-    "build": "node fix-venom.js && quasar build",
+    "build": "node fix-venom.js &&  quasar build -m electron",
     "prestart": "node fix-venom.js"
   },
   "dependencies": {
@@ -34,6 +34,8 @@
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app-webpack": "^3.9.2",
     "electron": "^29.1.5",
+    "electron-builder": "^24.3.0",
+    "electron-packager": "^17.1.1",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",

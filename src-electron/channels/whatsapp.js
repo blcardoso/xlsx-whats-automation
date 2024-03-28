@@ -33,32 +33,32 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
   var messagesSent = []
 
   for (const msg of payload) {
-        const timer = randomTimer()
-        console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
+    const timer = randomTimer()
+    console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
 
     try {
-    await new Promise((resolve, reject) => {
-      setTimeout((_) => {
-        whatsapp.checkNumberStatus(msg.number)
-          .then(() => {
-            if (!msg.image && fs.existsSync(msg.image)) {
-              whatsapp.sendText(msg.number, msg.message)
-                .then(() => resolve())
-                .catch((err) => reject(err.message))
-            } else {
-              whatsapp.sendImage(
-                msg.number,
-                msg.image,
-                "image",
-                msg.message
-              )
-                .then(() => resolve())
-                .catch((err) => reject(err.message))
-            }
-          })
-          .catch(_ => reject('Número inválido'))
-      }, timer)
-    })
+      await new Promise((resolve, reject) => {
+        setTimeout((_) => {
+          whatsapp.checkNumberStatus(msg.number)
+            .then(() => {
+              if (!msg.image && fs.existsSync(msg.image)) {
+                whatsapp.sendText(msg.number, msg.message)
+                  .then(() => resolve())
+                  .catch((err) => reject(err.message))
+              } else {
+                whatsapp.sendImage(
+                  msg.number,
+                  msg.image,
+                  "image",
+                  msg.message
+                )
+                  .then(() => resolve())
+                  .catch((err) => reject(err.message))
+              }
+            })
+            .catch(_ => reject('Número inválido'))
+        }, timer)
+      })
 
       console.log("Mensagem enviada para o número: " + msg.number.replace('@c.us', ''))
 
@@ -77,7 +77,7 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
       })
     }
   }
-     event.reply('WRITE_XLSX', messagesSent)
+  event.reply('WRITE_XLSX', messagesSent)
 })
 
 ipcMain.on('CLOSE_SESSION', async (event) => {
