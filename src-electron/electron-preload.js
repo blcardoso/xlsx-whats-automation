@@ -7,7 +7,10 @@ const validChannels = [
   "READ_FILE",
   "SEND_MESSAGES",
   "END_AUTOMATION",
-  "WRITE_XLSX"
+  "WRITE_XLSX",
+  "CLOSE_SESSION",
+  "SESSION_CLOSED",
+  "SESSION_CLOSE_ERROR"
 ]
 
 contextBridge.exposeInMainWorld('whatsapp', {

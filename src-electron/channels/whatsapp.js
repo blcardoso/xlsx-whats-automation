@@ -80,6 +80,17 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
      event.reply('WRITE_XLSX', messagesSent)
 })
 
+ipcMain.on('CLOSE_SESSION', async (event) => {
+  try {
+    await whatsapp.logout()
+    await whatsapp.close()
+
+    event.reply('SESSION_CLOSED')
+  } catch (err) {
+    event.reply('SESSION_CLOSE_ERROR', err)
+  }
+})
+
 ipcMain.handle('showOpenDialog', async (_, options) => {
   return dialog.showOpenDialog(options)
 })

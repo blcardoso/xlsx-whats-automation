@@ -1,8 +1,26 @@
 <template>
     <q-page class="flex flex-start column bg-green-3 text-center">
         <q-page-container class="flex flex-center column">
-            <h6>Nome da sessão: {{ sessionName }}</h6>
-            <q-btn color="green" icon="download" label="Escolher Excel" @click="click" />
+          <q-btn
+            :ripple="false"
+            flat
+            round
+            icon="logout"
+            class="absolute-top-right"
+            color="green"
+            :disabled="isLoading"
+            @click="showPrompt"
+          />
+            <h6>
+              Nome da sessão: {{ sessionName }}
+            </h6>
+            <q-btn
+              color="green"
+              icon="download"
+              label="Escolher Excel"
+              :disabled="isLoading"
+              @click="click"
+            />
             <span class="q-pt-lg q-pb-sm">
                 <b>
                     Arquivo selecionado:
@@ -11,29 +29,42 @@
             <span>
                 {{ filePath }}
             </span>
-
-            <!-- <q-virtual-scroll :items="logs">
-       </q-virtual-scroll> -->
-
-            <q-footer class="bg-green-3 q-py-sm">
-                <q-btn color="green" @click="readFile()" label="Enviar mensagens" :loading="isLoading">
+            <q-footer
+              v-if="!exiting"
+              class="bg-green-3 q-py-sm"
+            >
+                <q-btn
+                  color="green"
+                  label="Enviar mensagens"
+                  :loading="isLoading"
+                  @click="readFile()"
+                >
                 </q-btn>
             </q-footer>
         </q-page-container>
+      <q-inner-loading
+        class="absolute-center window-width window-height z-inherit"
+        :showing="exiting"
+        label="Encerrando sessão"
+        label-class="text-teal"
+        label-style="font-size: 1.1em"
+        color="green"
+      />
     </q-page>
 </template>
 
 <script setup>
     import { useQuasar } from 'quasar'
     import { ref, onMounted } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
 
     const route = useRoute()
+    const router = useRouter()
     const filePath = ref(null)
     const sessionName = ref("")
     const $q = useQuasar()
-    const logs = ref([])
     const isLoading = ref(false)
+    const exiting = ref(false)
 
     defineOptions({
         name: 'UserSession'
@@ -57,8 +88,7 @@
         ],
         message: "Escolha o arquivo excel",
     })
-  // exemplo da resposta
-  // {canceled: false, filePaths: Array(1)}
+
     if (!response.canceled) {
         filePath.value = response.filePaths[0]
     }
@@ -77,20 +107,57 @@
         }
     }
 
-window.xlsx.on('SEND_MESSAGES', payload => {
-    window.whatsapp.send('SEND_MESSAGES', payload)
-})
+    const showPrompt = () => {
+      $q.dialog({
+        dark: true,
+        title: 'Sair',
+        message: 'Você está encerrando essa sessão do whatsapp. Ao sair será necessário ler o QRCode novamente para continuar.',
+        cancel: {
+          label: 'Cancelar',
+          push: true,
+          color: 'negative',
+        },
+        ok: {
+          label: 'Confirmar',
+          push: true,
+          color: 'green',
+        },
+        persistent: true
+      }).onOk(() => {
+        exiting.value = true
+        window.whatsapp.send('CLOSE_SESSION')
+      }).onCancel(() => {})
+    }
 
-window.whatsapp.on('END_AUTOMATION', () => {
-    isLoading.value = false
+  window.xlsx.on('SEND_MESSAGES', payload => {
+      window.whatsapp.send('SEND_MESSAGES', payload)
+  })
+
+  window.whatsapp.on('END_AUTOMATION', () => {
+      isLoading.value = false
+      $q.notify({
+          type: 'positive',
+          message: 'Processo finalizado',
+          position: 'top-right'
+      })
+  })
+
+  window.whatsapp.on('WRITE_XLSX', payload => {
+      window.xlsx.send('WRITE_XLSX', payload)
+  })
+
+  window.whatsapp.on('SESSION_CLOSED', () => {
+    exiting.value = false
+    router.push({name: 'index'})
+  })
+
+  window.whatsapp.on('SESSION_CLOSE_ERROR', (err) => {
+    console.log({err})
+    exiting.value = false
     $q.notify({
-        type: 'positive',
-        message: 'Processo finalizado',
-        position: 'top-right'
+      type: 'negative',
+      message: 'Ocorreu um erro ao finalizar a sessão',
+      position: 'top-right'
     })
-})
-
-window.whatsapp.on('WRITE_XLSX', payload => {
-    window.xlsx.send('WRITE_XLSX', payload)
 })
 </script>

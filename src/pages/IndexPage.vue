@@ -1,6 +1,7 @@
 <template>
   <q-page class="flex flex-center column bg-green-3 text-center">
    <q-inner-loading
+     color="green"
      :showing="isVisible"
      label="Inicializando whatsapp"
      label-class="text-teal"
@@ -47,7 +48,7 @@ onMounted(() => {
   window.whatsapp.on('STATUS_SESSION', ({ session, statusSession }) => {
     statusText.value = statusSession
     sessionText.value = session
-  
+
     if (isConnected.includes(statusSession)) {
       router.push({
         name: 'user-session',
