@@ -129,21 +129,28 @@
       }).onCancel(() => {})
     }
 
-  window.xlsx.on('SEND_MESSAGES', payload => {
-      window.whatsapp.send('SEND_MESSAGES', payload)
-  })
+window.xlsx.on('SEND_MESSAGES', async (payload) => {
+  const responseSendMessage = await window.whatsapp.sendMessages(payload)
+  console.log('responseSendMessage', responseSendMessage)
+  const res = await window.xlsx.writeXlsx(responseSendMessage)
+  isLoading.value = false
+  if (res) {
+    $q.notify({
+      type: 'positive',
+      message: 'Processo finalizado',
+      position: 'top-right'
+    })
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: 'Erro ao gravar xlsx',
+      position: 'top-right'
+    })
+  }
+})
 
-  window.whatsapp.on('END_AUTOMATION', () => {
-      isLoading.value = false
-      $q.notify({
-          type: 'positive',
-          message: 'Processo finalizado',
-          position: 'top-right'
-      })
-  })
+window.whatsapp.on('END_AUTOMATION', () => {
 
-  window.whatsapp.on('WRITE_XLSX', payload => {
-      window.xlsx.send('WRITE_XLSX', payload)
   })
 
   window.whatsapp.on('SESSION_CLOSED', () => {

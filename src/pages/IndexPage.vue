@@ -37,8 +37,8 @@ defineOptions({
   name: 'IndexPage'
 });
 
-onMounted(() => {
-  window.whatsapp.send('CREATE_CLIENT')
+onMounted(async () => {
+  await window.whatsapp.createClient()
 
   window.whatsapp.on('QR_CODE', (qrCode) => {
     base64.value = qrCode

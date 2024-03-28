@@ -7,6 +7,7 @@ let whatsapp
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
   try {
+    console.log('CREATE_CLIENT')
     whatsapp = await create({
       disableSpins: true,
       disableWelcome: true,
@@ -23,45 +24,33 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
       createPathFileToken: true,
       updatesLog: true
     })
-    console.log('create', whatsapp)
+    console.log('CREATE_CLIENT', whatsapp)
   } catch (error) {
     console.log("ERRO", error)
   }
 })
 
-ipcMain.on('SEND_MESSAGES', async (event, payload) => {
-  var messagesSent = []
+ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
+  const messagesSent = []
 
   for (const msg of payload) {
     const timer = randomTimer()
     console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
-
+    const responseStatus = await whatsapp.checkNumberStatus(msg.number)
+    console.log('responseStatus', responseStatus)
     try {
-      await new Promise((resolve, reject) => {
-        setTimeout((_) => {
-          whatsapp.checkNumberStatus(msg.number)
-            .then(() => {
-              if (!msg.image && fs.existsSync(msg.image)) {
-                whatsapp.sendText(msg.number, msg.message)
-                  .then(() => resolve())
-                  .catch((err) => reject(err.message))
-              } else {
-                whatsapp.sendImage(
-                  msg.number,
-                  msg.image,
-                  "image",
-                  msg.message
-                )
-                  .then(() => resolve())
-                  .catch((err) => reject(err.message))
-              }
-            })
-            .catch(_ => reject('Número inválido'))
-        }, timer)
-      })
-
-      console.log("Mensagem enviada para o número: " + msg.number.replace('@c.us', ''))
-
+      if (!msg.image && fs.existsSync(msg.image)) {
+        const response = await whatsapp.sendText(msg.number, msg.message)
+        console.log('response sendText', response)
+      } else {
+        const response = await whatsapp.sendImage(
+          msg.number,
+          msg.image,
+          "image",
+          msg.message
+        )
+        console.log('response sendImage', response)
+      }
       messagesSent.push({
         phone: msg.number.replace('@c.us', ''),
         status: 'Sucesso',
@@ -76,8 +65,9 @@ ipcMain.on('SEND_MESSAGES', async (event, payload) => {
         last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
       })
     }
+    console.log("Mensagem enviada para o número: " + msg.number.replace('@c.us', ''))
   }
-  event.reply('WRITE_XLSX', messagesSent)
+  return messagesSent
 })
 
 ipcMain.on('CLOSE_SESSION', async (event) => {

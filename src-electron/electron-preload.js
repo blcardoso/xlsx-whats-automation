@@ -1,13 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
 const validChannels = [
-  "CREATE_CLIENT",
   "QR_CODE",
   "STATUS_SESSION",
   "CONNECTION_SUCCESSFUL",
   "READ_FILE",
   "SEND_MESSAGES",
-  "END_AUTOMATION",
-  "WRITE_XLSX",
   "CLOSE_SESSION",
   "SESSION_CLOSED",
   "SESSION_CLOSE_ERROR"
@@ -15,6 +12,9 @@ const validChannels = [
 
 contextBridge.exposeInMainWorld('whatsapp', {
   showOpenDialog: (...args) => ipcRenderer.invoke('showOpenDialog', ...args),
+  sendMessages: (payload) => ipcRenderer.invoke('SEND_MESSAGES', payload),
+  writeXlsx: (payload) => ipcRenderer.invoke('WRITE_XLSX', payload),
+  createClient: () => ipcRenderer.send('CREATE_CLIENT'),
   send: (channel, data) => {
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
