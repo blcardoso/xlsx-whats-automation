@@ -103,7 +103,7 @@
             })
         } else {
             isLoading.value = true
-            window.xlsx.send('READ_FILE', filePath.value)
+          window.whatsapp.send('READ_FILE', filePath.value)
         }
     }
 
@@ -129,10 +129,10 @@
       }).onCancel(() => {})
     }
 
-window.xlsx.on('SEND_MESSAGES', async (payload) => {
+window.whatsapp.on('SEND_MESSAGES', async (payload) => {
   const responseSendMessage = await window.whatsapp.sendMessages(payload)
   console.log('responseSendMessage', responseSendMessage)
-  const res = await window.xlsx.writeXlsx(responseSendMessage)
+  const res = await window.whatsapp.writeXlsx(responseSendMessage)
   isLoading.value = false
   if (res) {
     $q.notify({

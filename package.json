@@ -16,8 +16,8 @@
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,css,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "node fix-venom.js && quasar dev -m electron",
-    "build": "node fix-venom.js &&  quasar build -m electron",
+    "dev": "quasar dev -m electron",
+    "build": "quasar build -m electron",
     "prestart": "node fix-venom.js"
   },
   "dependencies": {
@@ -26,7 +26,8 @@
     "exceljs": "^4.4.0",
     "moment-timezone": "^0.5.45",
     "quasar": "^2.8.0",
-    "venom-bot": "^5.0.21",
+    "sharp": "^0.33.3",
+    "venom-bot": "github:orkestral/venom",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
   },
