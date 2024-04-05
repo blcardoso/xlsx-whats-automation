@@ -40,17 +40,15 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
       console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
       const responseStatus = await whatsapp.checkNumberStatus(msg.number)
       console.log('responseStatus', responseStatus)
+      console.log('msg.number', msg.number)
+      console.log('msg.message', msg.message)
+      console.log('msg.image', msg.image)
       if (!msg.image && fs.existsSync(msg.image)) {
-        const response = await whatsapp.sendText(msg.number, msg.message)
+        const response = await whatsapp.sendTextViaTyping(msg.number, msg.message)
         console.log('response sendText', response)
       } else {
-        const response = await whatsapp.sendImage(
-          msg.number,
-          msg.image,
-          "image",
-          msg.message
-        )
-        console.log('response sendImage', response)
+        const success = await whatsapp.sendPhotoVideoViaTyping(msg.number, msg.image, msg.message);
+        console.log('response sendImage', success)
       }
       messagesSent.push({
         phone: msg.number.replace('@c.us', ''),
