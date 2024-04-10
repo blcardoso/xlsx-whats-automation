@@ -1,11 +1,11 @@
-const { randomTimer } = require('../utils')
-const { ipcMain, dialog } = require("electron");
+const { ipcMain, dialog, app } = require("electron");
 const { create } = require('venom-bot')
 const moment = require('moment-timezone')
 const xlsx = require('exceljs');
 var xlsxPath = ''
 const wb = new xlsx.Workbook();
 import fs from 'fs'
+import log from '../logger/logger'
 let whatsapp
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
@@ -27,28 +27,29 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
       updatesLog: true
     })
   } catch (error) {
-    console.log("ERRO", error)
+    log.error("ERRO", error)
+    app.relaunch()
+    app.exit()
   }
 })
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
   const messagesSent = []
 
   for (const msg of payload) {
     try {
-      const timer = randomTimer()
-      console.log("Enviando mensagem em " + (timer / 1000) + " segundos...")
-      const responseStatus = await whatsapp.checkNumberStatus(msg.number)
-      console.log('responseStatus', responseStatus)
-      console.log('msg.number', msg.number)
-      console.log('msg.message', msg.message)
-      console.log('msg.image', msg.image)
-      if (!msg.image && fs.existsSync(msg.image)) {
-        const response = await whatsapp.sendTextViaTyping(msg.number, msg.message)
-        console.log('response sendText', response)
+      log.info(`msg.message ${msg.message}`)
+      log.info(`msg.number ${msg.number}`)
+      log.info(`msg.image ${msg.image}`)
+      if (!fs.existsSync(msg.image)) {
+        const response = await whatsapp.sendText(msg.number, msg.message)
+        log.info(`response sendText ${JSON.stringify(response)}`)
       } else {
-        const success = await whatsapp.sendPhotoVideoViaTyping(msg.number, msg.image, msg.message);
-        console.log('response sendImage', success)
+        const success = await whatsapp.sendVideo(msg.number, msg.image, msg.message);
+        log.info(`response sendImage ${JSON.stringify(success)}`)
       }
       messagesSent.push({
         phone: msg.number.replace('@c.us', ''),
@@ -56,7 +57,7 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
         last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
       })
     } catch (err) {
-      console.log("Erro ao enviar mensagem para o número: " + msg.number.replace('@c.us', ''))
+      log.error(`Erro ao enviar mensagem para o numero: ${msg.number.replace('@c.us', '')}, erro: ${JSON.stringify(err)}`)
 
       messagesSent.push({
         phone: msg.number.replace('@c.us', ''),
@@ -64,7 +65,8 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
         last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
       })
     }
-    console.log("Mensagem enviada para o número: " + msg.number.replace('@c.us', ''))
+    log.info("Mensagem enviada para o numero: " + msg.number.replace('@c.us', ''))
+    sleep(2000)
   }
   return messagesSent
 })
@@ -148,6 +150,6 @@ ipcMain.on('READ_FILE', async (event, path) => {
 
     event.reply('SEND_MESSAGES', messages)
   } catch (err) {
-    console.log(err)
+    log.error(err)
   }
 })

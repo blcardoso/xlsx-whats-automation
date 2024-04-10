@@ -27,9 +27,11 @@
     "moment-timezone": "^0.5.45",
     "quasar": "^2.8.0",
     "sharp": "^0.33.3",
-    "venom-bot": "github:orkestral/venom",
+    "venom-bot": "^5.1.0",
     "vue": "^3.4.18",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
