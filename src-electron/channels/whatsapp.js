@@ -38,7 +38,6 @@ function sleep(ms) {
 function isImage(path) {
   // Obtém a extensão do arquivo
   const extension = path.split('.').pop().toLowerCase();
-  console.log('extension', extension)
   // Verifica se a extensão está na lista de extensões de imagem válidas
   return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension);
 }
@@ -51,12 +50,15 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
       log.info(`msg.number ${msg.number}`)
       log.info(`msg.image ${msg.image}`)
       if (!fs.existsSync(msg.image)) {
+        log.info(`enviando texto`)
         const response = await whatsapp.sendText(msg.number, msg.message)
         log.info(`response sendText ${JSON.stringify(response)}`)
       } else if (isImage(msg.image)) {
+        log.info(`enviando imagem`)
         const success = await whatsapp.sendImage(msg.number, msg.image, 'image', msg.message);
         log.info(`response sendImage ${JSON.stringify(success)}`)
       } else {
+        log.info(`enviando video`)
         const success = await whatsapp.sendFile(msg.number, msg.image, 'video', msg.message);
         log.info(`response sendVideo ${JSON.stringify(success)}`)
       }
