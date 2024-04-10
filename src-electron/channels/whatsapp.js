@@ -1,12 +1,12 @@
-const { ipcMain, dialog, app } = require("electron");
-const { create } = require('venom-bot')
-const moment = require('moment-timezone')
-const xlsx = require('exceljs');
-var xlsxPath = ''
+import { ipcMain, dialog, app } from 'electron';
+import { create } from 'venom-bot';
+import moment from 'moment-timezone';
+import xlsx from 'exceljs';
+import fs from 'fs';
+import log from '../logger/logger';
 const wb = new xlsx.Workbook();
-import fs from 'fs'
-import log from '../logger/logger'
 let whatsapp
+let xlsxPath = ''
 
 ipcMain.on('CREATE_CLIENT', async (event) => {
   try {
@@ -35,7 +35,13 @@ ipcMain.on('CREATE_CLIENT', async (event) => {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+function isImage(path) {
+  // Obtém a extensão do arquivo
+  const extension = path.split('.').pop().toLowerCase();
+  console.log('extension', extension)
+  // Verifica se a extensão está na lista de extensões de imagem válidas
+  return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension);
+}
 ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
   const messagesSent = []
 
@@ -47,15 +53,19 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
       if (!fs.existsSync(msg.image)) {
         const response = await whatsapp.sendText(msg.number, msg.message)
         log.info(`response sendText ${JSON.stringify(response)}`)
-      } else {
-        const success = await whatsapp.sendVideo(msg.number, msg.image, msg.message);
+      } else if (isImage(msg.image)) {
+        const success = await whatsapp.sendImage(msg.number, msg.image, 'image', msg.message);
         log.info(`response sendImage ${JSON.stringify(success)}`)
+      } else {
+        const success = await whatsapp.sendFile(msg.number, msg.image, 'video', msg.message);
+        log.info(`response sendVideo ${JSON.stringify(success)}`)
       }
       messagesSent.push({
         phone: msg.number.replace('@c.us', ''),
         status: 'Sucesso',
         last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
       })
+      log.info("Mensagem enviada para o numero: " + msg.number.replace('@c.us', ''))
     } catch (err) {
       log.error(`Erro ao enviar mensagem para o numero: ${msg.number.replace('@c.us', '')}, erro: ${JSON.stringify(err)}`)
 
@@ -64,9 +74,11 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
         status: err,
         last_sent: moment().tz("America/Sao_Paulo").format('DD/MM/YYYY HH:mm:ss')
       })
+    } finally {
+      log.info('----------------------------------------------------------------------------------------------------------------------')
+      sleep(2000)
     }
-    log.info("Mensagem enviada para o numero: " + msg.number.replace('@c.us', ''))
-    sleep(2000)
+
   }
   return messagesSent
 })
