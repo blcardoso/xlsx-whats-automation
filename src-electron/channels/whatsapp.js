@@ -8,6 +8,14 @@ const wb = new xlsx.Workbook();
 let whatsapp
 let xlsxPath = ''
 
+function randomMillisecondsBetween15And25() {
+  const random = Math.random();
+  const randomMilliseconds = 20000 + random * 10000;
+
+  return Math.round(randomMilliseconds);
+}
+
+
 ipcMain.on('CREATE_CLIENT', async (event) => {
   try {
     whatsapp = await create({
@@ -46,6 +54,7 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
 
   for (const msg of payload) {
     try {
+      log.info(`msg = ${JSON.stringify(msg)}`)
       log.info(`msg.message ${msg.message}`)
       log.info(`msg.number ${msg.number}`)
       log.info(`msg.image ${msg.image}`)
@@ -78,7 +87,9 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
       })
     } finally {
       log.info('----------------------------------------------------------------------------------------------------------------------')
-      sleep(2000)
+      const tempo = randomMillisecondsBetween15And25()
+      log.info(`Aguardar ${tempo}`)
+      await sleep(tempo)
     }
 
   }
