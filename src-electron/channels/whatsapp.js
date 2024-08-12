@@ -55,6 +55,9 @@ ipcMain.handle('SEND_MESSAGES', async (event, payload) => {
   for (const msg of payload) {
     try {
       log.info(`msg = ${JSON.stringify(msg)}`)
+      if(msg?.message?.richText){
+        msg.message = msg.message.richText.map(item => item.text);
+      }
       log.info(`msg.message ${msg.message}`)
       log.info(`msg.number ${msg.number}`)
       log.info(`msg.image ${msg.image}`)
